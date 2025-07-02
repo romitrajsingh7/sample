@@ -1,0 +1,68 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.closed]="!sidebarOpen">
+    <div class="sidebar-content">
+      <h2 class="logo" *ngIf="sidebarOpen">Library Member</h2>
+      <nav>
+        <ul>
+          <li (click)="navigate('/dashboard')">Home</li>
+          <li (click)="navigate('/profile')">Profile</li>
+          <li (click)="navigate('/search & browse')" class="active">Search & Browse</li>
+          <li (click)="navigate('/borrow-transactions')">Borrow Tracking</li>
+          <li (click)="navigate('/overdue')">Overdue and Fine</li>
+        </ul>
+      </nav>
+    </div>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="topbar">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <span class="welcome">Search & Browse</span>
+      <div class="filters">
+        <select [(ngModel)]="searchField" (change)="groupBooksByGenre()" class="filter-select">
+          <option value="all">All</option>
+          <option value="title">Title</option>
+          <option value="author">Author</option>
+          <option value="genre">Genre</option>
+        </select>
+        <input class="search-input" placeholder="Search..." [(ngModel)]="searchTerm" (input)="groupBooksByGenre()" />
+      </div>
+    </header>
+
+    <section class="content-body">
+      <div *ngIf="customAlertMessage" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+          <p>{{ customAlertMessage }}</p>
+          <button (click)="closeAlert()">OK</button>
+        </div>
+      </div>
+
+      <div *ngFor="let genre of genreMap | keyvalue">
+        <h2 class="genre-heading">{{ genre.key }}</h2>
+        <div class="card-scroll-row">
+          <div *ngFor="let b of genre.value" class="book-card">
+            <div class="cover">
+              <img *ngIf="b.imageUrl" [src]="'http://localhost:8080' + b.imageUrl" alt="Cover of {{ b.title }}" />
+              <div *ngIf="!b.imageUrl" class="placeholder">No Image</div>
+            </div>
+            <div class="details">
+              <h3>{{ b.title }}</h3>
+              <p><strong>ID:</strong> {{ b.bookId }}</p>
+              <p><strong>Author:</strong> {{ b.author }}</p>
+              <p><strong>Year:</strong> {{ b.yearPublished }}</p>
+              <p><strong>Available:</strong> {{ b.availableCopies }}</p>
+            </div>
+            <div class="actions">
+              <button [disabled]="b.availableCopies === 0" (click)="borrow(b)">
+                {{ b.availableCopies > 0 ? 'Borrow' : 'Unavailable' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

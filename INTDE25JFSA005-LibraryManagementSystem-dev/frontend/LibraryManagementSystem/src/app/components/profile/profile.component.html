@@ -1,0 +1,61 @@
+<div class="main-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.closed]="!sidebarOpen">
+    <h2 class="logo" *ngIf="sidebarOpen">Library Member</h2>
+    <nav>
+      <ul>
+        <li (click)="navigate('/dashboard')" >Home</li>
+        <li (click)="navigate('/profile')" class="active">Profile</li>
+        <li (click)="navigate('/search & browse')">Search & Browse</li>
+        <li (click)="navigate('/borrow-transactions')">Borrow Tracking</li>
+        <li (click)="navigate('/overdue')">Overdue and Fine</li>
+      </ul>
+    </nav>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </aside>
+
+  <!-- Content Area -->
+  <div class="main-area">
+    <!-- View Mode -->
+     <header class="topbar">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+<span class="welcome" *ngIf="member"><strong>{{ member.name }}'s </strong>Profile</span>
+     </header>
+    <div class="profile-card" *ngIf="!loading && !errorMessage && !editMode">
+      <h2>{{ member.name }} Profile</h2>
+      <p><strong>Member ID:</strong> {{ member.id }}</p>
+      <p><strong>Name:</strong> {{ member.name }}</p>
+      <p><strong>Email:</strong> {{ member.email }}</p>
+      <p><strong>Phone:</strong> {{ member.phone }}</p>
+      <p><strong>Address:</strong> {{ member.address }}</p>
+      <p><strong>Membership Status:</strong> {{ member.membershipStatus }}</p>
+
+      <div class="button-row">
+        <button (click)="enableEdit()" class="primary">Edit</button>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div class="profile-edit-card" *ngIf="!loading && !errorMessage && editMode">
+      <h2>Edit Profile</h2>
+      <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
+        <label for="name">Name</label>
+        <input id="name" formControlName="name" type="text" />
+
+        <label for="phone">Phone</label>
+        <input id="phone" formControlName="phone" type="text" />
+
+        <label for="address">Address</label>
+        <input id="address" formControlName="address" type="text" />
+
+        <div class="button-row">
+          <button type="submit" class="primary" [disabled]="profileForm.invalid">Save</button>
+          <button type="button" class="secondary" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Error -->
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>
+</div>

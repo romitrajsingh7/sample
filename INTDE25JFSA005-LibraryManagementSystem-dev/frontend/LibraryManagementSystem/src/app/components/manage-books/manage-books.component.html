@@ -1,0 +1,104 @@
+<div class="dashboard-wrapper">
+  <aside class="sidebar" [class.closed]="!sidebarOpen">
+          <h2 class="logo" *ngIf="sidebarOpen">Library Admin</h2>
+          <nav>
+            <ul>
+              <li (click)="navigate('/admin-dashboard')" >Dashboard</li>
+              <li (click)="navigate('/manage-books')" class="active">Manage Books</li>
+              <li (click)="navigate('/manage-members')">Manage Members</li>
+              <li (click)="navigate('/transactions')">Transactions</li>
+              <li (click)="navigate('/overduefine')">Overdue and Fine</li>
+    
+            </ul>
+          </nav>
+          <button class="logout-btn" (click)="logout()">Logout</button>
+        </aside>
+  <main class="main-content">
+    <header class="topbar">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+        <span class="welcome"><strong>Books </strong>Management</span>
+        <div class="filters">
+        <select [(ngModel)]="searchField" (change)="applyFilter()" class="filter-select">
+        <option value="all">All</option>
+        <option value="bookId">ID</option>
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+        <option value="genre">Genre</option>
+        <option value="yearPublished">Year</option>
+      </select>
+      <input
+        class="search-input"
+        placeholder="Search by any field..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilter()"
+      />
+      <button class="btn-save" (click)="showAdd = !showAdd">
+        {{ showAdd ? 'Close' : 'Add Book' }}
+      </button>
+        </div>
+    </header>  
+
+    <!-- Add form -->
+    <section *ngIf="showAdd" class="add-form">
+      <input placeholder="Title" [(ngModel)]="newBook.title" />
+      <input placeholder="Author" [(ngModel)]="newBook.author" />
+      <input placeholder="Genre" [(ngModel)]="newBook.genre" />
+      <input placeholder="ISBN" [(ngModel)]="newBook.isbn" />
+      <input type="number" placeholder="Year" [(ngModel)]="newBook.yearPublished" />
+      <input type="number" placeholder="Available" [(ngModel)]="newBook.availableCopies" />
+      <input type="file" (change)="onNewCoverSelected($event)" />
+      <img *ngIf="newCoverPreview" [src]="newCoverPreview"
+           class="book-thumb preview" />
+      <button class="btn-save" (click)="saveNew()">Save</button>
+    </section>
+    
+    <section class="content-body">
+    <div *ngFor="let genre of genreGroups | keyvalue">
+      <h2 class="genre-heading">{{ genre.key }}</h2>
+      <div class="card-scroll-row">
+        <div *ngFor="let b of genre.value" class="book-card">
+    <div class="cover">
+      <img *ngIf="b.imageUrl" [src]="'http://localhost:8080' + b.imageUrl"  alt="Cover of {{b.title}}" />
+      <div *ngIf="!b.imageUrl" class="placeholder">No Image</div>
+    </div>
+    <div class="details">
+      <h3>{{ b.title }}</h3>
+      <p><strong>BookID:</strong> {{ b.bookId }}</p>
+      <p><strong>Author:</strong> {{ b.author }}</p>
+      <p><strong>Genre:</strong> {{ b.genre }}</p>
+      <p><strong>Year:</strong> {{ b.yearPublished }}</p>
+      <p><strong>Available:</strong> {{ b.availableCopies }}</p>
+    </div>
+    <div class="actions">
+      <ng-container *ngIf="editingId !== b.bookId">
+                <button class="btn-edit" (click)="startEdit(b)">Edit Copies</button>
+                <button class="btn-delete" (click)="deleteBook(b)">Delete</button>
+      </ng-container>
+      <ng-container *ngIf="editingId === b.bookId">
+        <input
+            type="number"
+            [(ngModel)]="editAvailable"
+            style="width: 70px; margin-right: 8px;"/>
+      </ng-container>
+              <ng-container *ngIf="editingId === b.bookId">
+                <button class="btn-save" (click)="updateCopies(b.bookId)">Save</button>
+                <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        </ng-container>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- <section class="content-body"> -->
+  <div *ngIf="customAlertMessage" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+      <p>{{ customAlertMessage }}</p>
+      <button class="btn-delete" (click)="confirmDelete()">OK </button>
+      <button class="btn-cancel" (click)="closeAlert()">Cancel</button>
+    </div>
+  </div>
+<!-- </section> -->
+
+</section>
+  </main>
+</div>
